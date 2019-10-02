@@ -12,56 +12,79 @@ module.exports = plop => {
     description: 'Create a reusable component',
     prompts: [
       {
+        type: 'list',
+        name: 'typeOfComponent',
+        message: 'What kind of component do you need?',
+        choices:['Class', 'Functional'],
+        validate: requireField('typeOfComponent')
+      },
+      {
         type: 'input',
-        name: 'name',
+        name: 'nameOfComponent',
         message: 'What is your component name?',
-        validate: requireField('name')
+        validate: requireField('nameOfComponent')
       },
     ],
-    actions: [
-      {
-        type: 'add',
-        path: 'src/components/{{pascalCase name}}/{{pascalCase name}}.js',
-        templateFile:
-          'plop-templates/Component/Component.js.hbs',
-      },
-      {
-        type: 'add',
-        path: 'src/components/{{pascalCase name}}/{{pascalCase name}}.test.js',
-        templateFile:
-          'plop-templates/Component/Component.test.js.hbs',
-      },
-      {
-        type: 'add',
-        path:
-          'src/components/{{pascalCase name}}/{{pascalCase name}}.module.css',
-        templateFile:
-          'plop-templates/Component/Component.module.css.hbs',
-      },
-      {
-        type: 'add',
-        path: 'src/components/{{pascalCase name}}/index.js',
-        templateFile: 'plop-templates/Component/index.js.hbs',
-      },
-      {
-        type: 'add',
-        path: 'src/components/index.js',
-        templateFile: 'plop-templates/injectable-index.js.hbs',
-        skipIfExists: true,
-      },
-      {
-        type: 'append',
-        path: 'src/components/index.js',
-        pattern: `/* PLOP_INJECT_IMPORT */`,
-        template: `import {{pascalCase name}} from './{{pascalCase name}}';`,
-      },
-      {
-        type: 'append',
-        path: 'src/components/index.js',
-        pattern: `/* PLOP_INJECT_EXPORT */`,
-        template: `\t{{pascalCase name}},`,
-      },
-    ],
+    actions: (data) => {
+      const actions = [];
+
+      if(data.typeOfComponent === 'Class'){
+        actions.push({
+          type: 'add',
+          path: 'src/components/{{pascalCase nameOfComponent}}/{{pascalCase nameOfComponent}}.js',
+          templateFile:
+            'plop-templates/Component/Component.js.hbs',
+        })
+      }else{
+        actions.push({
+          type: 'add',
+          path: 'src/components/{{pascalCase nameOfComponent}}/{{pascalCase nameOfComponent}}.js',
+          templateFile:
+            'plop-templates/Component/Component.functional.js.hbs',
+        })
+      }
+
+      actions.push(
+        {
+          type: 'add',
+          path: 'src/components/{{pascalCase nameOfComponent}}/{{pascalCase nameOfComponent}}.test.js',
+          templateFile:
+            'plop-templates/Component/Component.test.js.hbs',
+        },
+        {
+          type: 'add',
+          path:
+            'src/components/{{pascalCase nameOfComponent}}/{{pascalCase nameOfComponent}}.module.css',
+          templateFile:
+            'plop-templates/Component/Component.module.css.hbs',
+        },
+        {
+          type: 'add',
+          path: 'src/components/{{pascalCase nameOfComponent}}/index.js',
+          templateFile: 'plop-templates/Component/index.js.hbs',
+        },
+        {
+          type: 'add',
+          path: 'src/components/index.js',
+          templateFile: 'plop-templates/injectable-index.js.hbs',
+          skipIfExists: true,
+        },
+        {
+          type: 'append',
+          path: 'src/components/index.js',
+          pattern: `/* PLOP_INJECT_IMPORT */`,
+          template: `import {{pascalCase nameOfComponent}} from './{{pascalCase nameOfComponent}}';`,
+        },
+        {
+          type: 'append',
+          path: 'src/components/index.js',
+          pattern: `/* PLOP_INJECT_EXPORT */`,
+          template: `\t{{pascalCase nameOfComponent}},`,
+        },
+      )
+
+      return actions;
+    }
   })
 
   plop.setGenerator('page', {
